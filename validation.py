@@ -1,6 +1,6 @@
-import main
+import sockets
 
-def request_message_validation(message):
+def request_message_validation(message, list_of_addresses):
     for address in main.list_of_addresses:
         print(f'Sending Message {message} to Validation to {address}')
         sockets.validation_socket.sendto(message, (sockets.broadcast_address, sockets.validtion_port))
