@@ -10,9 +10,9 @@ list_of_addresses = []
 
 local_ip = get_local_ip()
 
-listen_packet_thread = Thread(target=receive_packtes, args=(sockets.communication_socket, stop_event))
+listen_packet_thread = Thread(target=receive_packtes, args=(sockets.communication_socket, stop_event, local_ip))
 send_packet_thread = Thread(target=send_packets, args=(sockets.communication_socket, stop_event))
-notification_thread = Thread(target=listen_notifications,  args=(sockets.notification_socket, stop_event, list_of_addresses))
+notification_thread = Thread(target=listen_notifications,  args=(sockets.notification_socket, stop_event, list_of_addresses, local_ip))
 
 notify_other_nodes(sockets.notification_socket, local_ip)
 

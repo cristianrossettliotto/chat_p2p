@@ -4,7 +4,7 @@ broadcast_ip = '0.0.0.0'
 communication_port = 5000
 notification_port = 5010
 validtion_port = 5020
-broadcast_address = '192.168.7.255'
+broadcast_address = '192.168.223.255'
 
 notification_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 notification_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
