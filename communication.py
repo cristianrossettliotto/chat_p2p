@@ -1,7 +1,7 @@
 import sockets
-import validation
 
-def receive_packtes(communication_socket, stop_event, local_ip, list_of_addresses):
+
+def receive_packtes(communication_socket, stop_event, local_ip, messages_to_validate):
     while not stop_event.is_set():
         try:
             data, addr = communication_socket.recvfrom(1024)
@@ -9,7 +9,7 @@ def receive_packtes(communication_socket, stop_event, local_ip, list_of_addresse
 
             if addr[0] != local_ip and not addr[0].startswith('127.'):
                 print(f"Received message from {addr[0]}: {message}")
-                request_message_validation(message, list_of_addresses)
+                messages_to_validate.append(message)
         except BlockingIOError:
             continue
         except ValueError:
