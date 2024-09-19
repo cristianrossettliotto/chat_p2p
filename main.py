@@ -5,6 +5,8 @@ from local_ip import get_local_ip
 from notifications import notify_other_nodes, listen_notifications
 from communication import receive_packtes, send_packets
 from daemons import verify_messages_to_validate_queue
+from validation import validate_other_node_messages
+
 stop_event = Event()
 list_of_addresses = []
 messages_to_validate = []
@@ -28,14 +30,22 @@ messages_to_validate_daemon = Thread(
                             target=verify_messages_to_validate_queue, 
                             args=(stop_event, list_of_addresses, messages_to_validate))
 
+
+validate_other_messages_daemon = Thread(
+                            target=validate_other_node_messages,
+                            args=(stop_event, validated_messages, messages_to_validate))
+
+
 notify_other_nodes(sockets.notification_socket, local_ip)
 
 notification_thread.start()
 listen_packet_thread.start()
 send_packet_thread.start()
 messages_to_validate_daemon.start()
+validate_other_messages_daemon.start()
 
 send_packet_thread.join()
 listen_packet_thread.join()
 notification_thread.join()
 messages_to_validate_daemon.join()
+validate_other_messages_daemon.join()
