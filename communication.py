@@ -9,7 +9,7 @@ def receive_packtes(communication_socket, stop_event, local_ip, messages_to_vali
 
             if addr[0] != local_ip and not addr[0].startswith('127.'):
                 print(f"Received message from {addr[0]}: {message}")
-                messages_to_validate.append(message)
+                messages_to_validate.append((message, addr[0]))
         except BlockingIOError:
             continue
         except ValueError:
