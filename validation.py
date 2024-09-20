@@ -12,10 +12,25 @@ def validate_other_node_messages(stop_event, validated_messages, messages_to_val
         try:
             data, addr = sockets.validation_socket.recvfrom(1024)
             message = data.decode('utf-8')
+            print(f'Message Received: {message}')
             if message in validated_messages or message in messages_to_validate:
-                sockets.validation_socket.sendto('valid'.encode('utf-8'), (addr[0], sockets.validtion_port))
+                print('Validated')
+                sockets.validation_socket.sendto('valid'.encode('utf-8'), (addr[0], sockets.validation_response_socket))
             else:
-                sockets.validation_socket.sendto('invalid'.encode('utf-8'), (addr[0], sockets.validtion_port))
+                print('Invalidated')
+                sockets.validation_socket.sendto('invalid'.encode('utf-8'), (addr[0], sockets.validation_response_socket))
+        except BlockingIOError:
+            continue
+        except ValueError:
+            continue
+
+
+def list_to_validation_response(stop_event, validated_messages, messages_to_validate):
+       while not stop_event.is_set():
+        try:
+            data, addr = sockets.validation_response_socket.recvfrom(1024)
+            message = data.decode('utf-8')
+            print(f'Message From Validation: {message}')
         except BlockingIOError:
             continue
         except ValueError:

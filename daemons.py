@@ -9,5 +9,6 @@ def verify_messages_to_validate_queue(stop_event, list_of_addresses, messages_to
             print('The Message Queue to validate has changed')
             request_message_validation(list_of_addresses, messages_to_validate)
             old_messages_to_validate = messages_to_validate
+            print(f'My new list: {old_messages_to_validate}')
 
 
