@@ -5,7 +5,7 @@ from local_ip import get_local_ip
 from notifications import notify_other_nodes, listen_notifications
 from communication import receive_packtes, send_packets
 from daemons import verify_messages_to_validate_queue
-from validation import validate_other_node_messages
+from validation import validate_other_node_messages, list_to_validation_response
 
 stop_event = Event()
 list_of_addresses = []
@@ -35,6 +35,9 @@ validate_other_messages_daemon = Thread(
                             target=validate_other_node_messages,
                             args=(stop_event, validated_messages, messages_to_validate))
 
+list_to_validation_response_daemon = Thread(
+                            target=list_to_validation_response,
+                            args=(stop_event,))
 
 notify_other_nodes(sockets.notification_socket, local_ip)
 
@@ -43,9 +46,11 @@ listen_packet_thread.start()
 send_packet_thread.start()
 messages_to_validate_daemon.start()
 validate_other_messages_daemon.start()
+list_to_validation_response_daemon.start()
 
-send_packet_thread.join()
-listen_packet_thread.join()
 notification_thread.join()
+listen_packet_thread.join()
+send_packet_thread.join()
 messages_to_validate_daemon.join()
 validate_other_messages_daemon.join()
+list_to_validation_response_daemon.join()
