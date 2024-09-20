@@ -1,7 +1,9 @@
 import sockets
 from datetime import datetime
+import time
 
 def request_message_validation(list_of_addresses, messages_to_validate):
+    time.sleep(1)
     for message_ip in messages_to_validate:
         message_received = message_ip[0]
         ip_from_sender = message_ip[1]
