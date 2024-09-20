@@ -22,6 +22,8 @@ def validate_other_node_messages(stop_event, validated_messages, messages_to_val
             data, addr = sockets.validation_socket.recvfrom(1024)
             message = data.decode('utf-8')
             print(f'Message Received: {message}')
+            print(f'validated_messages: {validated_messages}')
+            print(f'messages_to_validate: {messages_to_validate}')
             if message in validated_messages or message in messages_to_validate:
                 print('Validated')
                 sockets.validation_response_socket.sendto('valid'.encode('utf-8'), (addr[0], sockets.validtion_response_port))
