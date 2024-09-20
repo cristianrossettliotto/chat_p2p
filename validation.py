@@ -15,10 +15,10 @@ def validate_other_node_messages(stop_event, validated_messages, messages_to_val
             print(f'Message Received: {message}')
             if message in validated_messages or message in messages_to_validate:
                 print('Validated')
-                sockets.validation_socket.sendto('valid'.encode('utf-8'), (addr[0], sockets.validation_response_socket))
+                sockets.validation_response_socket.sendto('valid'.encode('utf-8'), (addr[0], sockets.validtion_response_port))
             else:
                 print('Invalidated')
-                sockets.validation_socket.sendto('invalid'.encode('utf-8'), (addr[0], sockets.validation_response_socket))
+                sockets.validation_response_socket.sendto('invalid'.encode('utf-8'), (addr[0], sockets.validtion_response_port))
         except BlockingIOError:
             continue
         except ValueError:
