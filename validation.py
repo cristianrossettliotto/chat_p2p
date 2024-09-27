@@ -9,7 +9,7 @@ def request_message_validation(list_of_addresses, messages_to_validate):
         ip_from_sender = message['origin']
         for address in list_of_addresses:
             # if ip_from_sender != address:
-            sockets.validation_socket.sendto(json.dumps(message_to_send, indent=4, sort_keys=True, default=str).encode('utf-8'), (address, sockets.validtion_port))
+            sockets.validation_socket.sendto(json.dumps(message_to_send, indent=4, sort_keys=True, default=str  ).encode('utf-8'), (address, sockets.validtion_port))
 
 
 def validate_other_node_messages(stop_event, validated_messages, messages_to_validate):
@@ -31,9 +31,9 @@ def validate_other_node_messages(stop_event, validated_messages, messages_to_val
                     flag = True
 
             if flag:
-                print('valid')
+                sockets.validation_response_socket.send('valid'.encode('utf-8'), (address, sockets.validtion_response_port))
             else:
-                print('invalid')
+                sockets.validation_response_socket.send('invalid'.encode('utf-8'), (address, sockets.validtion_response_port))
         
         except BlockingIOError:
             continue
