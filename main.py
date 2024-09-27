@@ -20,7 +20,7 @@ listen_packet_thread = Thread(
 
 send_packet_thread = Thread(
                             target=send_packets, 
-                            args=(sockets.communication_socket, stop_event))
+                            args=(sockets.communication_socket, stop_event, local_ip))
 
 notification_thread = Thread(
                             target=listen_notifications,  
