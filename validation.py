@@ -5,7 +5,7 @@ from time import sleep
 def request_message_validation(list_of_addresses, messages_to_validate):
     sleep(1)
     for message in messages_to_validate:
-        if message_to_send['already_validated']:
+        if message['already_validated']:
             continue
 
         message_to_send = message
@@ -32,9 +32,9 @@ def validate_other_node_messages(stop_event, validated_messages, messages_to_val
                     flag = True
 
             if flag:
-                sockets.validation_response_socket.sendto(json.dumps({'id': message_received_to_validate['id'], 'result': true}).encode('utf-8'), (addr[0], sockets.validtion_response_port))
+                sockets.validation_response_socket.sendto(json.dumps({'id': message_received_to_validate['id'], 'result': True}).encode('utf-8'), (addr[0], sockets.validtion_response_port))
             else:
-                sockets.validation_response_socket.sendto(json.dumps({'id': message_received_to_validate['id'], 'result': false}).encode('utf-8'), (addr[0], sockets.validtion_response_port))
+                sockets.validation_response_socket.sendto(json.dumps({'id': message_received_to_validate['id'], 'result': False}).encode('utf-8'), (addr[0], sockets.validtion_response_port))
         
         except BlockingIOError:
             continue

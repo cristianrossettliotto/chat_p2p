@@ -9,6 +9,7 @@ def receive_packtes(communication_socket, stop_event, local_ip, messages_to_vali
         try:
             data, addr = communication_socket.recvfrom(1024)
             message =  json.loads(data.decode('utf-8'))
+            print(f'Message Received receive_packtes: {message}')
             current_time = datetime.now()
             expiration_time = current_time + timedelta(seconds=15)
             message['expiration_time'] = expiration_time
@@ -36,5 +37,5 @@ def send_packets(communication_socket, stop_event, local_ip):
             break
 
         communication_socket.sendto(
-            json.dumps({'id': uuid4(), 'already_validated': False, 'content': userInput, 'origin': local_ip, 'author': '','validation_count': 0, 'expiration_time': ''}, indent=4, sort_keys=True, default=str).encode('utf-8'), 
+            json.dumps({'id': uuid.uuid4(), 'already_validated': False, 'content': userInput, 'origin': local_ip, 'author': '','validation_count': 0, 'expiration_time': ''}, indent=4, sort_keys=True, default=str).encode('utf-8'), 
             (sockets.broadcast_address, sockets.communication_port))
