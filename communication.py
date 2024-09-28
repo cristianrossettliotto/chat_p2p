@@ -14,7 +14,7 @@ def receive_packtes(communication_socket, stop_event, local_ip, messages_to_vali
             current_time = datetime.now()
             expiration_time = current_time + timedelta(seconds=15)
             message['expiration_time'] = expiration_time
-
+            messages_to_validate.append(message)
             if addr[0] != local_ip and not addr[0].startswith('127.'):
                 verify_messages_to_validate_queue(list_of_addresses, messages_to_validate)
             else:
