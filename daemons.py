@@ -9,4 +9,4 @@ def verify_messages_to_validate_queue(stop_event, list_of_addresses, messages_to
             request_message_validation(list_of_addresses, messages_to_validate)
             old_messages_to_validate = messages_to_validate
         else:
-            sleep(1)
+            print(f'Function That Verify Messages to Validate: {messages_to_validate}\t{old_messages_to_validate}')
