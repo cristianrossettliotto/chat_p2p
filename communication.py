@@ -1,10 +1,11 @@
 import sockets
 import json
 import uuid
+from daemons import verify_messages_to_validate_queue
 from time import sleep
 from datetime import datetime, timedelta
 
-def receive_packtes(communication_socket, stop_event, local_ip, messages_to_validate):
+def receive_packtes(communication_socket, stop_event, local_ip, messages_to_validate, list_of_addresses):
     while not stop_event.is_set():
         try:
             data, addr = communication_socket.recvfrom(1024)
@@ -15,10 +16,10 @@ def receive_packtes(communication_socket, stop_event, local_ip, messages_to_vali
             message['expiration_time'] = expiration_time
 
             if addr[0] != local_ip and not addr[0].startswith('127.'):
-                messages_to_validate.append(message)
+                verify_messages_to_validate_queue(list_of_addresses, messages_to_validate)
             else:
                 sleep(1)
-                messages_to_validate.append(message)
+                verify_messages_to_validate_queue(list_of_addresses, messages_to_validate)
 
         except BlockingIOError:
             continue
