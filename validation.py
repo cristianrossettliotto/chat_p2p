@@ -4,6 +4,7 @@ from time import sleep
 
 def request_message_validation(list_of_addresses, messages_to_validate):
     sleep(1)
+    print(f'Validation Message: {messages_to_validate}')
     for message in messages_to_validate:
         if message['already_validated']:
             continue
