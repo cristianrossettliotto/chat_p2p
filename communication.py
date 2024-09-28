@@ -1,5 +1,6 @@
 import sockets
 import json
+import uuid
 from time import sleep
 from datetime import datetime, timedelta
 
@@ -11,7 +12,7 @@ def receive_packtes(communication_socket, stop_event, local_ip, messages_to_vali
             current_time = datetime.now()
             expiration_time = current_time + timedelta(seconds=15)
             message['expiration_time'] = expiration_time
-            print(f'Method receive_packtes is receiving the message {message}')
+
             if addr[0] != local_ip and not addr[0].startswith('127.'):
                 messages_to_validate.append(message)
             else:
@@ -22,7 +23,7 @@ def receive_packtes(communication_socket, stop_event, local_ip, messages_to_vali
             continue
         except ValueError:
             continue
-    print('Method receive_packtes is not responding anymore')
+
 
 
 def send_packets(communication_socket, stop_event, local_ip):
@@ -33,8 +34,7 @@ def send_packets(communication_socket, stop_event, local_ip):
             stop_event.set()
             sockets.close_sockets()
             break
-        print(f'Method send_packets is sending the message {userInput}')
+
         communication_socket.sendto(
-            json.dumps({'content': userInput, 'origin': local_ip, 'author': '','validation_count': 0, 'expiration_time': ''}, indent=4, sort_keys=True, default=str).encode('utf-8'), 
+            json.dumps({'id': uuid4(), 'already_validated': False, 'content': userInput, 'origin': local_ip, 'author': '','validation_count': 0, 'expiration_time': ''}, indent=4, sort_keys=True, default=str).encode('utf-8'), 
             (sockets.broadcast_address, sockets.communication_port))
-    print('Method send_packets is not responding anymore')

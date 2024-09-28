@@ -37,7 +37,7 @@ validate_other_messages_thread = Thread(
 
 list_to_validation_response_thread = Thread(
                             target=list_to_validation_response,
-                            args=(stop_event,))
+                            args=(stop_event, messages_to_validate, list_of_addresses, validated_messages))
 
 notify_other_nodes(sockets.notification_socket, local_ip)
 
