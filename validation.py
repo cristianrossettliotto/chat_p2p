@@ -11,6 +11,9 @@ def request_message_validation(list_of_addresses, messages_to_validate):
 
         message_to_send = message
         ip_from_sender = message['origin']
+
+        print(f'Ip Addresses: {list_of_addresses}')
+        print(f'Will Validate Message {message_to_send}')
         for address in list_of_addresses:
             if ip_from_sender != address:
                 message_to_send['already_validated'] = True
