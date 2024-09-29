@@ -1,23 +1,28 @@
 import sockets
 import json
 from time import sleep
+from datetime import datetime
 
 def request_message_validation(list_of_addresses, messages_to_validate):
     sleep(1)
-    print(f'Validation Message: {messages_to_validate}')
+    messages_to_remove = []
+
     for message in messages_to_validate:
         if message['already_validated']:
             continue
 
-        message_to_send = message
-        ip_from_sender = message['origin']
+        if message['already_validated'] >= datetime.now():
+            messages_to_remove.append(message)
+            continue
 
-        print(f'Ip Addresses: {list_of_addresses}')
-        print(f'Will Validate Message {message_to_send}')
         for address in list_of_addresses:
-            if ip_from_sender != address:
-                message_to_send['already_validated'] = True
-                sockets.validation_socket.sendto(json.dumps(message_to_send, indent=4, sort_keys=True, default=str  ).encode('utf-8'), (address, sockets.validtion_port))
+            if message['origin'] == address:
+                continue
+            
+            message['already_validated'] = True
+            sockets.validation_socket.sendto(json.dumps(message, indent=4, sort_keys=True, default=str  ).encode('utf-8'), (address, sockets.validtion_port))
+
+    messages_to_validate = [msg for msg in messages_to_validate if msg not in messages_to_remove]
 
 
 def validate_other_node_messages(stop_event, validated_messages, messages_to_validate):
@@ -27,18 +32,12 @@ def validate_other_node_messages(stop_event, validated_messages, messages_to_val
             data, addr = sockets.validation_socket.recvfrom(1024)
             message_received_to_validate = json.loads(data.decode('utf-8'))
 
-            for message in messages_to_validate:
-                if message['content'] == message_received_to_validate['content']:
-                    flag = True
+            flag = any(
+                message['content'] == message_received_to_validate['content']
+                for message in messages_to_validate + validated_messages
+            )
 
-            for message in validated_messages:
-                if message['content'] == message_received_to_validate['content']:
-                    flag = True
-
-            if flag:
-                sockets.validation_response_socket.sendto(json.dumps({'id': message_received_to_validate['id'], 'result': True}).encode('utf-8'), (addr[0], sockets.validtion_response_port))
-            else:
-                sockets.validation_response_socket.sendto(json.dumps({'id': message_received_to_validate['id'], 'result': False}).encode('utf-8'), (addr[0], sockets.validtion_response_port))
+            sockets.validation_response_socket.sendto(json.dumps({'id': message_received_to_validate['id'], 'result': flag}).encode('utf-8'), (addr[0], sockets.validtion_response_port))
         
         except BlockingIOError:
             continue
@@ -51,16 +50,17 @@ def list_to_validation_response(stop_event, messages_to_validate, list_of_addres
         try:
             data, addr = sockets.validation_response_socket.recvfrom(1024)
             response = json.loads(data.decode('utf-8'))
-            
+            messages_to_remove = []
+
             for message in messages_to_validate:
                 if message['id'] == response['id']:
                     message['validation_count'] = (message['validation_count'] + 1) if response['result'] else (message['validation_count'] - 1)
 
                     if (len(list_of_addresses) / 2) >= message['validation_count']:
-                            validated_messages.append(message)
-                            print(f'Validated Messages: {validated_messages}')
-                            messages_to_validate.remove(message)
-                            print(f'Message To Validate: {messages_to_validate}')
+                        validated_messages.append(message)
+                        messages_to_remove.append(message)
+
+            messages_to_validate = [message for message in messages_to_validate if message not in messages_to_remove]
 
         except BlockingIOError:
             continue

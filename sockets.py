@@ -26,6 +26,7 @@ validation_response_socket.bind((broadcast_ip, validtion_response_port))
 communication_socket.setblocking(False)
 notification_socket.setblocking(False)
 validation_socket.setblocking(False)
+validation_response_socket.setblocking(False)
 
 def close_sockets():
     communication_socket.close()
