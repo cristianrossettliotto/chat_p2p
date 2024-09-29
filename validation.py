@@ -38,7 +38,6 @@ def validate_other_node_messages(stop_event, validated_messages, messages_to_val
             )
 
             sockets.validation_response_socket.sendto(json.dumps({'id': message_received_to_validate['id'], 'result': flag}).encode('utf-8'), (addr[0], sockets.validtion_response_port))
-        
         except BlockingIOError:
             continue
         except ValueError:

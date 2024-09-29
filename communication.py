@@ -14,12 +14,11 @@ def receive_packtes(communication_socket, stop_event, local_ip, messages_to_vali
             expiration_time = current_time + timedelta(seconds=15)
             message['expiration_time'] = expiration_time
             messages_to_validate.append(message)
-            if addr[0] != local_ip and not addr[0].startswith('127.'):
-                request_message_validation(list_of_addresses, messages_to_validate)
-            else:
+            
+            if addr[0] == local_ip or addr[0].startswith('127.'):
                 sleep(1)
-                request_message_validation(list_of_addresses, messages_to_validate)
 
+            request_message_validation(list_of_addresses, messages_to_validate)
         except BlockingIOError:
             continue
         except ValueError:
@@ -32,7 +31,6 @@ def send_packets(communication_socket, stop_event, local_ip):
     while True:
         user_input = input()
         if user_input.lower() in ("exit", "quit", "x", "q"):
-            print("Quitting...")
             stop_event.set()
             sockets.close_sockets()
             break
