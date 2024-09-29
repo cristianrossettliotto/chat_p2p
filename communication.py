@@ -5,7 +5,7 @@ from time import sleep
 from datetime import datetime, timedelta
 from validation import request_message_validation
 
-def receive_packtes(communication_socket, stop_event, local_ip, messages_to_validate, list_of_addresses):
+def receive_packets(communication_socket, stop_event, local_ip, messages_to_validate, list_of_addresses):
     while not stop_event.is_set():
         try:
             data, addr = communication_socket.recvfrom(1024)

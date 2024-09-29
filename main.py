@@ -3,7 +3,7 @@ from threading import Thread, Event
 import sockets
 from local_ip import get_local_ip
 from notifications import notify_other_nodes, listen_notifications
-from communication import receive_packtes, send_packets
+from communication import receive_packets, send_packets
 from validation import validate_other_node_messages, list_to_validation_response
 
 stop_event = Event()
@@ -13,36 +13,18 @@ validated_messages = []
 
 local_ip = get_local_ip()
 
-listen_packet_thread = Thread(
-                            target=receive_packtes, 
-                            args=(sockets.communication_socket, stop_event, local_ip, messages_to_validate, list_of_addresses))
-
-send_packet_thread = Thread(
-                            target=send_packets, 
-                            args=(sockets.communication_socket, stop_event, local_ip))
-
-notification_thread = Thread(
-                            target=listen_notifications,  
-                            args=(sockets.notification_socket, stop_event, list_of_addresses, local_ip))
-
-validate_other_messages_thread = Thread(
-                            target=validate_other_node_messages,
-                            args=(stop_event, validated_messages, messages_to_validate))
-
-list_to_validation_response_thread = Thread(
-                            target=list_to_validation_response,
-                            args=(stop_event, messages_to_validate, list_of_addresses, validated_messages))
+threads = [
+    Thread(target=receive_packets, args=(sockets.communication_socket, stop_event, local_ip, messages_to_validate, list_of_addresses)),
+    Thread(target=send_packets, args=(sockets.communication_socket, stop_event, local_ip)),
+    Thread(target=listen_notifications, args=(sockets.notification_socket, stop_event, list_of_addresses, local_ip)),
+    Thread(target=validate_other_node_messages, args=(stop_event, validated_messages, messages_to_validate)),
+    Thread(target=list_to_validation_response, args=(stop_event, messages_to_validate, list_of_addresses, validated_messages))
+]
 
 notify_other_nodes(sockets.notification_socket, local_ip)
 
-notification_thread.start()
-listen_packet_thread.start()
-send_packet_thread.start()
-validate_other_messages_thread.start()
-list_to_validation_response_thread.start()
+for thread in threads:
+    thread.start()
 
-notification_thread.join()
-listen_packet_thread.join()
-send_packet_thread.join()
-validate_other_messages_thread.join()
-list_to_validation_response_thread.join()
+for thread in threads:
+    thread.join()
