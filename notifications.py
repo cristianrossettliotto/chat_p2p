@@ -5,7 +5,7 @@ def notify_other_nodes(notification_socket, local_ip):
 
 
 def listen_notifications(notification_socket, stop_event, list_of_addresses, local_ip):
-   while not stop_event.is_set():
+    while not stop_event.is_set():
         try:
             data, addr = notification_socket.recvfrom(1024)
             if addr[0] != local_ip and addr[0] not in list_of_addresses:
@@ -15,3 +15,5 @@ def listen_notifications(notification_socket, stop_event, list_of_addresses, loc
             continue
         except ValueError:
             continue
+    
+    print('listen_notifications Quiting')

@@ -42,9 +42,10 @@ def validate_other_node_messages(stop_event, validated_messages, messages_to_val
             continue
         except ValueError:
             continue
+    print('validate_other_node_messages Quiting')
 
 
-def list_to_validation_response(stop_event, messages_to_validate, list_of_addresses, validated_messages):
+def listen_to_validation_response(stop_event, messages_to_validate, list_of_addresses, validated_messages):
     while not stop_event.is_set():
         try:
             data, addr = sockets.validation_response_socket.recvfrom(1024)
@@ -65,3 +66,4 @@ def list_to_validation_response(stop_event, messages_to_validate, list_of_addres
             continue
         except ValueError:
             continue
+    print('listen_to_validation_response Quiting')

@@ -23,18 +23,21 @@ def receive_packets(communication_socket, stop_event, local_ip, messages_to_vali
             continue
         except ValueError:
             continue
+    print('receive_packets Quiting')
 
 
 
-def send_packets(communication_socket, stop_event, local_ip):
-    user_input = ''
-    while True:
-        user_input = input()
-        if user_input.lower() in ("exit", "quit", "x", "q"):
-            stop_event.set()
-            sockets.close_sockets()
-            break
+def send_packets(communication_socket, stop_event, local_ip, message, page):
+    if message.lower() in ("exit", "quit", "x", "q"):
+        print('send_packets Quiting')
+        stop_event.set()
+        sockets.close_sockets()
+        page.window_close()
+        return
+    
+    print('Sending')
+    communication_socket.sendto(
+        json.dumps({'id': uuid.uuid4(), 'already_validated': False, 'content': message, 'origin': local_ip, 'author': '', 'validation_count': 0, 'expiration_time': ''}, indent=4, sort_keys=True, default=str).encode('utf-8'), 
+        (sockets.broadcast_address, sockets.communication_port))
 
-        communication_socket.sendto(
-            json.dumps({'id': uuid.uuid4(), 'already_validated': False, 'content': user_input, 'origin': local_ip, 'author': '','validation_count': 0, 'expiration_time': ''}, indent=4, sort_keys=True, default=str).encode('utf-8'), 
-            (sockets.broadcast_address, sockets.communication_port))
+    message = ''
