@@ -1,4 +1,5 @@
 import sockets
+import flet
 import json
 from time import sleep
 from datetime import datetime
@@ -48,7 +49,7 @@ def validate_other_node_messages(stop_event, validated_messages, messages_to_val
     print('validate_other_node_messages Quiting')
 
 
-def listen_to_validation_response(stop_event, messages_to_validate, list_of_addresses, validated_messages, show_validated_message):
+def listen_to_validation_response(stop_event, messages_to_validate, list_of_addresses, validated_messages, chat):
     while not stop_event.is_set():
         try:
             data, addr = sockets.validation_response_socket.recvfrom(1024)
@@ -63,7 +64,7 @@ def listen_to_validation_response(stop_event, messages_to_validate, list_of_addr
                     if (len(list_of_addresses) / 2) >= message['validation_count']:
                         validated_messages.append(message)
                         print(f'Validated Messages: {validated_messages}')
-                        show_validated_message(message)
+                        chat.controls.append(ft.Text(message))
                         messages_to_remove.append(message)
 
             messages_to_validate = [message for message in messages_to_validate if message not in messages_to_remove]

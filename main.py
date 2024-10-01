@@ -12,6 +12,7 @@ stop_event = Event()
 list_of_addresses = []
 messages_to_validate = []
 validated_messages = []
+chat = None
 
 local_ip = get_local_ip()
 
@@ -76,15 +77,12 @@ def interface(page: ft.Page):
         ),
     )
 
-    def show_validated_message(message):
-        chat.controls.append(ft.Text(message))
-
 
 threads = [
     Thread(target=receive_packets, args=(sockets.communication_socket, stop_event, local_ip, messages_to_validate, list_of_addresses)),
     Thread(target=listen_notifications, args=(sockets.notification_socket, stop_event, list_of_addresses, local_ip)),
     Thread(target=validate_other_node_messages, args=(stop_event, validated_messages, messages_to_validate)),
-    Thread(target=listen_to_validation_response, args=(stop_event, messages_to_validate, list_of_addresses, validated_messages, show_validated_message))
+    Thread(target=listen_to_validation_response, args=(stop_event, messages_to_validate, list_of_addresses, validated_messages, chat))
 ]
 
 notify_other_nodes(sockets.notification_socket, local_ip)
