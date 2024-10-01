@@ -18,8 +18,8 @@ def request_message_validation(list_of_addresses, messages_to_validate):
             continue
 
         for address in list_of_addresses:
-            if message['origin'] == address:
-                continue
+            # if message['origin'] == address:
+            #     continue
             
             message['already_validated'] = True
             sockets.validation_socket.sendto(json.dumps(message, indent=4, sort_keys=True, default=str  ).encode('utf-8'), (address, sockets.validtion_port))
@@ -49,7 +49,7 @@ def validate_other_node_messages(stop_event, validated_messages, messages_to_val
     print('validate_other_node_messages Quiting')
 
 
-def listen_to_validation_response(stop_event, messages_to_validate, list_of_addresses, validated_messages, chat):
+def listen_to_validation_response(stop_event, messages_to_validate, list_of_addresses, validated_messages):
     while not stop_event.is_set():
         try:
             data, addr = sockets.validation_response_socket.recvfrom(1024)
@@ -64,7 +64,6 @@ def listen_to_validation_response(stop_event, messages_to_validate, list_of_addr
                     if (len(list_of_addresses) / 2) >= message['validation_count']:
                         validated_messages.append(message)
                         print(f'Validated Messages: {validated_messages}')
-                        chat.controls.append(ft.Text(message))
                         messages_to_remove.append(message)
 
             messages_to_validate = [message for message in messages_to_validate if message not in messages_to_remove]
