@@ -49,6 +49,7 @@ def interface(page: ft.Page):
         max_lines=5,
         filled=True,
         expand=True,
+        disabled=len(list_of_addresses) > 0,
         on_submit=lambda e: handle_send_message()
     )
 

@@ -12,7 +12,7 @@ def request_message_validation(list_of_addresses, messages_to_validate):
         if message['already_validated']:
             continue
 
-        if message['expiration_time'] >= datetime.now():
+        if message['expiration_time'] <= datetime.now():
             messages_to_remove.append(message)
             continue
 
