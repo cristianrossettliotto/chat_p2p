@@ -14,9 +14,11 @@ def receive_packets(communication_socket, stop_event, local_ip, messages_to_vali
             expiration_time = current_time + timedelta(seconds=15)
             message['expiration_time'] = expiration_time
             messages_to_validate.append(message)
-            
+
             if addr[0] == local_ip or addr[0].startswith('127.'):
                 sleep(1)
+
+            print(f'Message Received 2: {message}')   
 
             request_message_validation(list_of_addresses, messages_to_validate)
         except BlockingIOError:

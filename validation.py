@@ -7,11 +7,12 @@ def request_message_validation(list_of_addresses, messages_to_validate):
     sleep(1)
     messages_to_remove = []
 
-    for message in messages_to_validate:
+    for message in messages_to_validate:    
+        print(f'Message On Request Validation: {message}')
         if message['already_validated']:
             continue
 
-        if message['already_validated'] >= datetime.now():
+        if message['expiration_time'] >= datetime.now():
             messages_to_remove.append(message)
             continue
 
@@ -37,6 +38,8 @@ def validate_other_node_messages(stop_event, validated_messages, messages_to_val
                 for message in messages_to_validate + validated_messages
             )
 
+            print(f'Returning The Response Of Validation: {message_received_to_validate['id']}  {flag}')
+
             sockets.validation_response_socket.sendto(json.dumps({'id': message_received_to_validate['id'], 'result': flag}).encode('utf-8'), (addr[0], sockets.validtion_response_port))
         except BlockingIOError:
             continue
@@ -54,10 +57,12 @@ def listen_to_validation_response(stop_event, messages_to_validate, list_of_addr
 
             for message in messages_to_validate:
                 if message['id'] == response['id']:
+                    print(f'Receiving Response From Validation Request: {message}')
                     message['validation_count'] = (message['validation_count'] + 1) if response['result'] else (message['validation_count'] - 1)
 
                     if (len(list_of_addresses) / 2) >= message['validation_count']:
                         validated_messages.append(message)
+                        print(f'Validated Messages: {validated_messages}')
                         messages_to_remove.append(message)
 
             messages_to_validate = [message for message in messages_to_validate if message not in messages_to_remove]
