@@ -1,4 +1,6 @@
 import flet as ft
+import uuid
+from time import sleep
 from flet import TextAlign
 from threading import Event, Thread
 
@@ -15,20 +17,9 @@ validated_messages = []
 
 local_ip = get_local_ip()
 
-
-
-
-def interface(page: ft.Page):
+def create_interface(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
     page.title = "Chat Peer To Peer"
-
-    def handle_send_message():
-        if new_message.value == '' or stop_event.is_set():
-            return
-
-        send_packets(sockets.communication_socket, stop_event, local_ip, new_message.value, page)
-        new_message.value = ""
-        new_message.focus()
 
     chat = ft.ListView(
         expand=True,
@@ -46,6 +37,31 @@ def interface(page: ft.Page):
         expand=True,
         on_submit=lambda e: handle_send_message()
     )
+
+    def show_validated_message():
+        print('ENTROU NA FUNCAO QUE VALIDA ESSA PORRA')
+        while not stop_event.is_set():
+            for message in validated_messages:
+                print(f'Caiu AQUIII {message['already_showed']}')
+                if message['already_showed']:
+                    continue
+                print('Caiu AQUIII')
+                message['already_showed'] = True
+                chat.controls.append(ft.Text(f"{['content']}"))
+                page.update()
+            sleep(0.5)
+
+
+    def handle_send_message():
+        if new_message.value == '' or stop_event.is_set():
+            return
+        message = {'id': uuid.uuid4(), 'already_validated': False, 'already_showed': False, 'content': new_message.value, 'origin': local_ip, 'author': '', 'validation_count': 0, 'expiration_time': ''}
+        send_packets(sockets.communication_socket, stop_event, local_ip, message, page)
+        new_message.value = ""
+        new_message.focus()
+
+    thread = Thread(target = show_validated_message)
+    thread.start()
 
     page.add(
         
@@ -77,6 +93,8 @@ def interface(page: ft.Page):
     )
 
 
+
+
 threads = [
     Thread(target=receive_packets, args=(sockets.communication_socket, stop_event, local_ip, messages_to_validate, list_of_addresses)),
     Thread(target=listen_notifications, args=(sockets.notification_socket, stop_event, list_of_addresses, local_ip)),
@@ -89,7 +107,7 @@ notify_other_nodes(sockets.notification_socket, local_ip)
 for thread in threads:
     thread.start()
 
-ft.app(target=interface)
+ft.app(target=create_interface)
 
 for thread in threads:
     thread.join()

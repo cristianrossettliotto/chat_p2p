@@ -21,6 +21,7 @@ def request_message_validation(list_of_addresses, messages_to_validate):
             # if message['origin'] == address:
             #     continue
             
+            print('Returning Validation Message')
             message['already_validated'] = True
             sockets.validation_socket.sendto(json.dumps(message, indent=4, sort_keys=True, default=str  ).encode('utf-8'), (address, sockets.validtion_port))
 
