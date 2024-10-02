@@ -101,10 +101,11 @@ threads = [
     Thread(target=listen_to_validation_response, args=(stop_event, messages_to_validate, list_of_addresses, validated_messages, global_mutex))
 ]
 
-notify_other_nodes(local_ip)
-
 for thread in threads:
     thread.start()
+
+
+notify_other_nodes(local_ip)
 
 ft.app(target=create_interface)
 
