@@ -39,15 +39,14 @@ def create_interface(page: ft.Page):
     )
 
     def show_validated_message():
-        print('ENTROU NA FUNCAO QUE VALIDA ESSA PORRA')
         while not stop_event.is_set():
             for message in validated_messages:
-                print(f'Caiu AQUIII {message['already_showed']}')
+                    
                 if message['already_showed']:
                     continue
-                print('Caiu AQUIII')
+
                 message['already_showed'] = True
-                chat.controls.append(ft.Text(f"{['content']}"))
+                chat.controls.append(ft.Text(f"{message['content']}"))
                 page.update()
             sleep(0.5)
 

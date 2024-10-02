@@ -18,8 +18,8 @@ def request_message_validation(list_of_addresses, messages_to_validate):
             continue
 
         for address in list_of_addresses:
-            # if message['origin'] == address:
-            #     continue
+            if message['origin'] == address:
+                continue
             
             print('Returning Validation Message')
             message['already_validated'] = True
@@ -45,7 +45,8 @@ def validate_other_node_messages(stop_event, validated_messages, messages_to_val
             sockets.validation_response_socket.sendto(json.dumps({'id': message_received_to_validate['id'], 'result': flag}).encode('utf-8'), (addr[0], sockets.validtion_response_port))
         except BlockingIOError:
             continue
-        except ValueError:
+        except ValueError as e:
+            print(f'Error: {e}')
             continue
     print('validate_other_node_messages Quiting')
 
@@ -62,7 +63,7 @@ def listen_to_validation_response(stop_event, messages_to_validate, list_of_addr
                     print(f'Receiving Response From Validation Request: {message}')
                     message['validation_count'] = (message['validation_count'] + 1) if response['result'] else (message['validation_count'] - 1)
 
-                    if (len(list_of_addresses) / 2) >= message['validation_count']:
+                    if len(list_of_addresses) >= message['validation_count']:
                         validated_messages.append(message)
                         print(f'Validated Messages: {validated_messages}')
                         messages_to_remove.append(message)
