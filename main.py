@@ -2,9 +2,8 @@ import flet as ft
 import uuid
 from time import sleep
 from flet import TextAlign
-from threading import Event, Thread
+from threading import Event, Thread, Lock
 
-import sockets
 from local_ip import get_local_ip
 from notifications import notify_other_nodes, listen_notifications
 from communication import receive_packets, send_packets
@@ -14,6 +13,7 @@ stop_event = Event()
 list_of_addresses = []
 messages_to_validate = []
 validated_messages = []
+global_mutex = Lock()
 
 local_ip = get_local_ip()
 
@@ -55,7 +55,7 @@ def create_interface(page: ft.Page):
         if new_message.value == '' or stop_event.is_set():
             return
         message = {'id': uuid.uuid4(), 'already_validated': False, 'already_showed': False, 'content': new_message.value, 'origin': local_ip, 'author': '', 'validation_count': 0, 'expiration_time': ''}
-        send_packets(sockets.communication_socket, stop_event, local_ip, message, page)
+        send_packets(stop_event, local_ip, message, page)
         new_message.value = ""
         new_message.focus()
 
@@ -95,13 +95,13 @@ def create_interface(page: ft.Page):
 
 
 threads = [
-    Thread(target=receive_packets, args=(sockets.communication_socket, stop_event, local_ip, messages_to_validate, list_of_addresses)),
-    Thread(target=listen_notifications, args=(sockets.notification_socket, stop_event, list_of_addresses, local_ip)),
-    Thread(target=validate_other_node_messages, args=(stop_event, validated_messages, messages_to_validate)),
-    Thread(target=listen_to_validation_response, args=(stop_event, messages_to_validate, list_of_addresses, validated_messages))
+    Thread(target=receive_packets, args=(stop_event, local_ip, messages_to_validate, list_of_addresses, global_mutex)),
+    Thread(target=listen_notifications, args=(stop_event, list_of_addresses, local_ip)),
+    Thread(target=validate_other_node_messages, args=(stop_event, validated_messages, messages_to_validate, global_mutex)),
+    Thread(target=listen_to_validation_response, args=(stop_event, messages_to_validate, list_of_addresses, validated_messages, global_mutex))
 ]
 
-notify_other_nodes(sockets.notification_socket, local_ip)
+notify_other_nodes(local_ip)
 
 for thread in threads:
     thread.start()
