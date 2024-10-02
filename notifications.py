@@ -17,8 +17,8 @@ def listen_notifications(stop_event, list_of_addresses, local_ip):
             if addr[0] != local_ip:
                 list_of_addresses.append(addr[0])
 
-            if type(content) == str and data not in list_of_addresses:
-                list_of_addresses.append(addr[0])
+            if type(content) == str and content not in list_of_addresses:
+                list_of_addresses.append(content)
                 
             if type(content) == list:
                 for address in content:
