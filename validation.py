@@ -10,10 +10,15 @@ def request_message_validation(list_of_addresses, messages_to_validate, global_m
 
     with global_mutex:
         for message in messages_to_validate:
+            print(f'Current Message To Validate: {message['content']}')
             if message['already_validated']:
                 continue
+            
+            data = datetime.now()
 
-            if message['expiration_time'] <= datetime.now():
+            print(f'{data}')
+
+            if message['expiration_time'] <= data:
                 messages_to_remove.append(message)
                 continue
 
@@ -61,10 +66,10 @@ def listen_to_validation_response(stop_event, messages_to_validate, list_of_addr
             with global_mutex:
                 for message in messages_to_validate:
                     if message['id'] == response['id']:
-                        print(f'Receiving Response From Validation Request: {message}')
+                        print(f'Receiving Response From Validation Request: {message['content']}')
                         message['validation_count'] = (message['validation_count'] + 1) if response['result'] else (message['validation_count'] - 1)
 
-                        if len(list_of_addresses) >= message['validation_count']:
+                        if message['validation_count']:
                             validated_messages.append(message)
                             print(f'Validated Messages: {validated_messages}')
                             messages_to_remove.append(message)
