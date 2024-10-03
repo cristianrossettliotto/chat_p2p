@@ -15,6 +15,8 @@ messages_to_validate = []
 validated_messages = []
 global_mutex = Lock()
 
+global_flag = True
+
 local_ip = get_local_ip()
 
 def create_interface(page: ft.Page):
@@ -41,6 +43,7 @@ def create_interface(page: ft.Page):
         max_lines=5,
         filled=True,
         expand=True,
+        disabled= global_flag,
         on_submit=lambda e: handle_send_message()
     )
 
@@ -51,6 +54,7 @@ def create_interface(page: ft.Page):
                 if address not in local_addresses:
                     local_addresses.append(address)
                     list.controls.append(ft.Text(address))
+                    new_message.disabled = len(local_addresses) < 1
                     page.update()
 
     def show_validated_message():
@@ -123,9 +127,6 @@ def create_interface(page: ft.Page):
         ),
     )
 
-
-
-
 threads = [
     Thread(target=receive_packets, args=(stop_event, local_ip, messages_to_validate, list_of_addresses, global_mutex)),
     Thread(target=listen_notifications, args=(stop_event, list_of_addresses, local_ip, global_mutex)),
@@ -136,7 +137,6 @@ threads = [
 
 for thread in threads:
     thread.start()
-
 
 notify_other_nodes(local_ip)
 
