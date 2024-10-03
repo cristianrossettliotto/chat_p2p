@@ -22,8 +22,15 @@ def create_interface(page: ft.Page):
     page.title = "Chat Peer To Peer"
 
     chat = ft.ListView(
+        ft.Text('Chat'),
         expand=True,
         spacing=10,
+        auto_scroll=True,
+    )
+
+    list = ft.ListView(
+        expand=True,
+        spacing=5,
         auto_scroll=True,
     )
 
@@ -37,6 +44,12 @@ def create_interface(page: ft.Page):
         expand=True,
         on_submit=lambda e: handle_send_message()
     )
+
+    def show_adresses():
+        while not stop_event.is_set():
+            for address in list_of_addresses:
+                list.controls.append(ft.Text(address))
+                page.update()
 
     def show_validated_message():
         while not stop_event.is_set():
@@ -59,8 +72,13 @@ def create_interface(page: ft.Page):
         new_message.value = ""
         new_message.focus()
 
-    thread = Thread(target = show_validated_message)
-    thread.start()
+    threads = [
+        Thread(target = show_validated_message), 
+        Thread(target=show_adresses)
+    ]
+    
+    for thread in threads:
+        thread.start()
 
     page.add(
         
@@ -70,12 +88,24 @@ def create_interface(page: ft.Page):
             ],
             alignment=ft.MainAxisAlignment.CENTER
         ),
+        ft.Row(
+            [
+                ft.Container(
+                    content=chat,
+                    border=ft.border.all(1, ft.colors.OUTLINE),
+                    border_radius=5,
+                    padding=10,
+                    expand=True,
+                ),
 
-        ft.Container(
-            content=chat,
-            border=ft.border.all(1, ft.colors.OUTLINE),
-            border_radius=5,
-            padding=10,
+                ft.Container(
+                    content=list,
+                    width=200,
+                    border=ft.border.all(1, ft.colors.OUTLINE),
+                    border_radius=5,
+                    padding=5,
+                ),
+            ],
             expand=True,
         ),
 
