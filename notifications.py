@@ -9,7 +9,6 @@ def notify_other_nodes(local_ip):
 
 def listen_notifications(stop_event, list_of_addresses, local_ip, global_mutex):
     changed = False
-    print(f'Listen Notification Start: {list_of_addresses} {id(list_of_addresses)} ')
     while not stop_event.is_set():
         try:
             data, addr = sockets.notification_socket.recvfrom(1024)
@@ -33,7 +32,6 @@ def listen_notifications(stop_event, list_of_addresses, local_ip, global_mutex):
                         changed = True
                         list_of_addresses.append(address)
 
-                print(f'Listen Notification: {list_of_addresses} {id(list_of_addresses)} ')
                 if changed:
                     changed = False
                     sockets.notification_socket.sendto(json.dumps(list_of_addresses).encode('utf-8'), (sockets.broadcast_address, sockets.notification_port))

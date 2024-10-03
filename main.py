@@ -101,7 +101,6 @@ threads = [
     Thread(target=listen_to_validation_response, args=(stop_event, messages_to_validate, list_of_addresses, validated_messages, global_mutex))
 ]
 
-print(f'Main: {list_of_addresses} {id(list_of_addresses)} ')
 
 for thread in threads:
     thread.start()

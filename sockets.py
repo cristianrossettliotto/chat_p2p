@@ -24,4 +24,3 @@ def close_sockets():
     notification_socket.close()
     validation_socket.close()
     validation_response_socket.close()
-    print('close_sockets Quiting')
