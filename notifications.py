@@ -8,6 +8,7 @@ def notify_other_nodes(local_ip):
 
 
 def listen_notifications(stop_event, list_of_addresses, local_ip, global_mutex):
+    changed = False
     print(f'Listen Notification Start: {list_of_addresses} {id(list_of_addresses)} ')
     while not stop_event.is_set():
         try:
@@ -29,11 +30,12 @@ def listen_notifications(stop_event, list_of_addresses, local_ip, global_mutex):
 
                 for address in temp_list:
                     if address not in list_of_addresses:
-                        list_of_addresses.appen(address)
+                        changed = True
+                        list_of_addresses.append(address)
 
                 print(f'Listen Notification: {list_of_addresses} {id(list_of_addresses)} ')
-                if temp_list != list_of_addresses:
-                    temp_list = list_of_addresses
+                if changed:
+                    changed = False
                     sockets.notification_socket.sendto(json.dumps(list_of_addresses).encode('utf-8'), (sockets.broadcast_address, sockets.notification_port))
         except BlockingIOError:
             continue
