@@ -10,6 +10,8 @@ def receive_packets(stop_event, local_ip, messages_to_validate, list_of_addresse
             data, addr = sockets.communication_socket.recvfrom(1024)
             message =  json.loads(data.decode('utf-8'))
 
+            print(f'Receive Packtes: {list_of_addresses}')
+
             with global_mutex:    
                 message['expiration_time'] = (datetime.now() + timedelta(seconds=15))
                 messages_to_validate.append(message)

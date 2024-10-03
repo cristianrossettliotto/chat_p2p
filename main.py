@@ -96,7 +96,7 @@ def create_interface(page: ft.Page):
 
 threads = [
     Thread(target=receive_packets, args=(stop_event, local_ip, messages_to_validate, list_of_addresses, global_mutex)),
-    Thread(target=listen_notifications, args=(stop_event, list_of_addresses, local_ip)),
+    Thread(target=listen_notifications, args=(stop_event, list_of_addresses, local_ip, global_mutex)),
     Thread(target=validate_other_node_messages, args=(stop_event, validated_messages, messages_to_validate, global_mutex)),
     Thread(target=listen_to_validation_response, args=(stop_event, messages_to_validate, list_of_addresses, validated_messages, global_mutex))
 ]
