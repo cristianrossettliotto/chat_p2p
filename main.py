@@ -22,7 +22,6 @@ def create_interface(page: ft.Page):
     page.title = "Chat Peer To Peer"
 
     chat = ft.ListView(
-        ft.Text('Chat'),
         expand=True,
         spacing=10,
         auto_scroll=True,
@@ -46,10 +45,13 @@ def create_interface(page: ft.Page):
     )
 
     def show_adresses():
+        local_addresses = []
         while not stop_event.is_set():
             for address in list_of_addresses:
-                list.controls.append(ft.Text(address))
-                page.update()
+                if address not in local_addresses:
+                    local_addresses.append(address)
+                    list.controls.append(ft.Text(address))
+                    page.update()
 
     def show_validated_message():
         while not stop_event.is_set():

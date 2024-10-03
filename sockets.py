@@ -11,7 +11,7 @@ def create_socket(port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     sock.bind((broadcast_ip, port))
-    sock.setblocking(False)
+    #sock.setblocking(False)
     return sock
 
 notification_socket = create_socket(notification_port)
