@@ -4,7 +4,7 @@ from time import sleep
 from flet import TextAlign
 from threading import Event, Thread, Lock
 
-from ips import get_local_ip
+from ips import get_local_ip, listen_nodes_exit
 from notifications import notify_other_nodes, listen_notifications
 from communication import receive_packets, send_packets
 from validation import validate_other_node_messages, listen_to_validation_response
@@ -132,7 +132,8 @@ threads = [
     Thread(target=receive_packets, args=(stop_event, local_ip, messages_to_validate, list_of_addresses, global_mutex)),
     Thread(target=listen_notifications, args=(stop_event, list_of_addresses, local_ip, global_mutex)),
     Thread(target=validate_other_node_messages, args=(stop_event, validated_messages, messages_to_validate, global_mutex)),
-    Thread(target=listen_to_validation_response, args=(stop_event, messages_to_validate, list_of_addresses, validated_messages, global_mutex))
+    Thread(target=listen_to_validation_response, args=(stop_event, messages_to_validate, list_of_addresses, validated_messages, global_mutex)),
+    Thread(target=listen_nodes_exit, args=(stop_event, list_of_addresses, global_mutex))
 ]
 
 

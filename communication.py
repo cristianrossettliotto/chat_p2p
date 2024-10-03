@@ -1,5 +1,7 @@
 import sockets
 import json
+
+from ips import notify_other_nodes_of_exit
 from time import sleep
 from datetime import datetime, timedelta
 from validation import request_message_validation
@@ -27,6 +29,8 @@ def receive_packets(stop_event, local_ip, messages_to_validate, list_of_addresse
 
 def send_packets(stop_event, local_ip, message, page):
     if message['content'].lower() in ("exit", "quit", "x", "q"):
+        notify_other_nodes_of_exit()
+        sleep(0.5)
         stop_event.set()
         sockets.close_sockets()
         page.window_close()
