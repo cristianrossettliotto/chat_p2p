@@ -4,7 +4,7 @@ from time import sleep
 from flet import TextAlign
 from threading import Event, Thread, Lock
 
-from local_ip import get_local_ip
+from ips import get_local_ip
 from notifications import notify_other_nodes, listen_notifications
 from communication import receive_packets, send_packets
 from validation import validate_other_node_messages, listen_to_validation_response
@@ -14,8 +14,6 @@ list_of_addresses = []
 messages_to_validate = []
 validated_messages = []
 global_mutex = Lock()
-
-global_flag = True
 
 local_ip = get_local_ip()
 
@@ -43,30 +41,33 @@ def create_interface(page: ft.Page):
         max_lines=5,
         filled=True,
         expand=True,
-        disabled= global_flag,
+        disabled= True,
         on_submit=lambda e: handle_send_message()
     )
 
     def show_adresses():
         local_addresses = []
         while not stop_event.is_set():
-            for address in list_of_addresses:
-                if address not in local_addresses:
-                    local_addresses.append(address)
-                    list.controls.append(ft.Text(address))
-                    new_message.disabled = len(local_addresses) < 1
-                    page.update()
+            with global_mutex:
+                for address in list_of_addresses:
+                    if address not in local_addresses:
+                        local_addresses.append(address)
+                        list.controls.append(ft.Text(address))
+                        new_message.disabled = len(local_addresses) < 1
+                        page.update()
+
 
     def show_validated_message():
         while not stop_event.is_set():
-            for message in validated_messages:
-                    
-                if message['already_showed']:
-                    continue
+            with global_mutex:
+                for message in validated_messages:
+                        
+                    if message['already_showed']:
+                        continue
 
-                message['already_showed'] = True
-                chat.controls.append(ft.Text(f"{message['content']}"))
-                page.update()
+                    message['already_showed'] = True
+                    chat.controls.append(ft.Text(f"{message['content']}"))
+                    page.update()
             sleep(0.5)
 
 
