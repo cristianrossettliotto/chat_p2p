@@ -47,15 +47,19 @@ def create_interface(page: ft.Page):
 
     def show_adresses():
         local_addresses = []
+        text_controls = {}  # Dicionário para armazenar referências a ft.Text por endereço
+
         while not stop_event.is_set():
             with global_mutex:
                 for address in list_of_addresses:
                     if address not in local_addresses:
                         local_addresses.append(address)
-                        list.controls.append(ft.Text(address))
+                        text_control = ft.Text(address)  # Cria o controle de texto
+                        text_controls[address] = text_control  # Armazena a referência do ft.Text
+                        list.controls.append(text_control)
                         new_message.disabled = len(local_addresses) < 1
                         page.update()
-                
+
                 addresses_to_remove = []
 
                 for address in local_addresses:
@@ -64,7 +68,9 @@ def create_interface(page: ft.Page):
 
                 for address in addresses_to_remove:
                     local_addresses.remove(address)
-                    list.controls.remove(ft.Text(address))
+                    if address in text_controls:
+                        list.controls.remove(text_controls[address])  # Usa a referência existente
+                        del text_controls[address]  # Remove a referência do dicionário
                     page.update()
 
 
