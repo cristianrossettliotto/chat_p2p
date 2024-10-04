@@ -55,6 +55,17 @@ def create_interface(page: ft.Page):
                         list.controls.append(ft.Text(address))
                         new_message.disabled = len(local_addresses) < 1
                         page.update()
+                
+                addresses_to_remove = []
+
+                for address in local_addresses:
+                    if address not in list_of_addresses:
+                        addresses_to_remove.append(address)
+
+                for address in addresses_to_remove:
+                    local_addresses.remove(address)
+                    list.controls.remove(ft.Text(address))
+                    page.update()
 
 
     def show_validated_message():

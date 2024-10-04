@@ -21,8 +21,10 @@ def listen_nodes_exit(stop_event, list_of_addresses, global_mutex):
             data, addr = sockets.notification_exit_socket.recvfrom(1024)
             message =  data.decode('utf-8')
 
-            with global_mutex:    
+            with global_mutex:
+                print(f'Removing: {message}')
                 list_of_addresses.remove(message)
+                print(f'List Of Addresses: {list_of_addresses}')
         except BlockingIOError:
             continue
         except ValueError:
