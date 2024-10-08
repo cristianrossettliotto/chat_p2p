@@ -47,17 +47,17 @@ def create_interface(page: ft.Page):
 
     def show_adresses():
         local_addresses = []
-        text_controls = {}  # Dicionário para armazenar referências a ft.Text por endereço
+        text_controls = {}
 
         while not stop_event.is_set():
             with global_mutex:
                 for address in list_of_addresses:
                     if address not in local_addresses:
                         local_addresses.append(address)
-                        text_control = ft.Text(address)  # Cria o controle de texto
-                        text_controls[address] = text_control  # Armazena a referência do ft.Text
+                        text_control = ft.Text(address)
+                        text_controls[address] = text_control
                         list.controls.append(text_control)
-                        new_message.disabled = len(local_addresses) < 1
+                        new_message.disabled = len(local_addresses) < 2
                         page.update()
 
                 addresses_to_remove = []
@@ -69,8 +69,9 @@ def create_interface(page: ft.Page):
                 for address in addresses_to_remove:
                     local_addresses.remove(address)
                     if address in text_controls:
-                        list.controls.remove(text_controls[address])  # Usa a referência existente
-                        del text_controls[address]  # Remove a referência do dicionário
+                        list.controls.remove(text_controls[address])
+                        del text_controls[address]
+                    new_message.disabled = len(local_addresses) < 2
                     page.update()
 
 
@@ -83,7 +84,7 @@ def create_interface(page: ft.Page):
                         continue
 
                     message['already_showed'] = True
-                    chat.controls.append(ft.Text(f"{message['content']}"))
+                    chat.controls.append(ft.Text(f"{message['origin']}: {message['content']}"))
                     page.update()
             sleep(0.5)
 

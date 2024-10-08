@@ -17,7 +17,7 @@ def receive_packets(stop_event, local_ip, messages_to_validate, list_of_addresse
                 messages_to_validate.append(message)
 
             if addr[0] == local_ip or addr[0].startswith('127.'):
-                sleep(1)  
+                sleep(0.5)  
 
             request_message_validation(list_of_addresses, messages_to_validate, global_mutex)
         except BlockingIOError:

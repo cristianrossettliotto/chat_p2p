@@ -5,7 +5,7 @@ from time import sleep
 from datetime import datetime
 
 def request_message_validation(list_of_addresses, messages_to_validate, global_mutex):
-    sleep(1)
+    sleep(0.5)
     messages_to_remove = []
 
     with global_mutex:

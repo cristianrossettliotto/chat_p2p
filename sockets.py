@@ -1,11 +1,11 @@
 import socket
 
 broadcast_ip = '0.0.0.0'
-communication_port = 5000
-notification_port = 5010
-validtion_port = 5020
-validtion_response_port = 5030
-notification_exit_port = 5040
+communication_port = 32000
+notification_port = 32010
+validtion_port = 32020
+validtion_response_port = 32030
+notification_exit_port = 32040
 broadcast_address = '192.168.7.255'
 
 def create_socket(port):
